@@ -14,6 +14,7 @@ import com.example.mvp_convet_gjp_png.databinding.ActivityMainBinding
 
 
 class MainActivity() : AppCompatActivity(), ViewSSS {
+
     private lateinit var binding: ActivityMainBinding
     private val presenter = Presenter(this)
 
@@ -27,13 +28,11 @@ class MainActivity() : AppCompatActivity(), ViewSSS {
             openInternalStorage()
         }
         binding.ConvertJPGToPNG.setOnClickListener(listener)
-
     }
 
-    override fun getBitmao(): Bitmap {
-        return BitmapFactory.decodeResource(resources, R.drawable.image_name)
-
-    }
+    //BitmapFactory.decodeResource(resources, R.drawable.image_name)
+    // заменить на bitmap из resultLauncher( )
+    override fun getBitmao(): Bitmap = BitmapFactory.decodeResource(resources, R.drawable.image_name)
 
     private fun openInternalStorage() {
         val photoPickerIntent =
@@ -42,7 +41,6 @@ class MainActivity() : AppCompatActivity(), ViewSSS {
         photoPickerIntent.action = Intent.ACTION_GET_CONTENT
         resultLauncher.launch(photoPickerIntent)
     }
-
 
     private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -56,13 +54,11 @@ class MainActivity() : AppCompatActivity(), ViewSSS {
                     for (i in 0 until mClipData!!.itemCount) {
                         val item = mClipData.getItemAt(i)
                         uri = item.uri
-                        // display your images
                         bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                     }
 
                 } else if (data?.data != null) {
                     uri = data.data!!
-                    // display your image
                     // binding.image.setImageURI(uri)
                     bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                 }

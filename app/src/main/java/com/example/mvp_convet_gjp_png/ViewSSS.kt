@@ -4,5 +4,4 @@ import android.graphics.Bitmap
 
 interface ViewSSS {
     fun getBitmao() : Bitmap
-
 }

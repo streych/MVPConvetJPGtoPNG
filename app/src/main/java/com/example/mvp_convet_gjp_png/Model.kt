@@ -10,10 +10,6 @@ import java.io.OutputStream
 
 class Model {
 
-    fun getString(): String {
-        return "Hello"
-    }
-
     fun saveImageInternalStorage(bitmaps: Bitmap) {
 
         val path = Environment.getExternalStorageDirectory()

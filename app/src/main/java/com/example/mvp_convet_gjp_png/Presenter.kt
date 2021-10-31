@@ -6,8 +6,7 @@ class Presenter(var view: ViewSSS) {
     private val model = Model()
 
     fun btn_click(){
-        view.setString(model.getString())
-        //model.saveImageInternalStorage(view.getBitmao())
-    }
+        model.saveImageInternalStorage(view.getBitmao())
+}
 
 }

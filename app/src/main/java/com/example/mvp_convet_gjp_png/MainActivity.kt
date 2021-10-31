@@ -3,20 +3,17 @@ package com.example.mvp_convet_gjp_png
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mvp_convet_gjp_png.databinding.ActivityMainBinding
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 
-class MainActivity : AppCompatActivity(), ViewSSS {
+class MainActivity() : AppCompatActivity(), ViewSSS {
     private lateinit var binding: ActivityMainBinding
     private val presenter = Presenter(this)
 
@@ -30,57 +27,46 @@ class MainActivity : AppCompatActivity(), ViewSSS {
             openInternalStorage()
         }
         binding.ConvertJPGToPNG.setOnClickListener(listener)
+
     }
 
+    override fun getBitmao(): Bitmap {
+        return BitmapFactory.decodeResource(resources, R.drawable.image_name)
 
-    override fun setString(string: String) {
-        binding.CCCC.text = string
     }
 
     private fun openInternalStorage() {
-        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        val photoPickerIntent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         photoPickerIntent.type = "image/*"
+        photoPickerIntent.action = Intent.ACTION_GET_CONTENT
         resultLauncher.launch(photoPickerIntent)
     }
 
 
-    var resultLauncher =
+    private var resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val data: Intent? = result.data
             val resultCode: Int = result.resultCode
-            var bitmap: Bitmap
+            lateinit var uri: Uri
+            lateinit var bitmap: Bitmap
             if (resultCode == RESULT_OK) {
                 if (data?.clipData != null) {
                     val mClipData = data.clipData
                     for (i in 0 until mClipData!!.itemCount) {
                         val item = mClipData.getItemAt(i)
-                        val uri = item.uri
+                        uri = item.uri
                         // display your images
-                        binding.image.setImageURI(uri)
                         bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
-
                     }
-                } else if (data?.data != null) {
-                    val uri = data.data
-                    // display your image
-                    binding.image.setImageURI(uri)
-                    bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
 
+                } else if (data?.data != null) {
+                    uri = data.data!!
+                    // display your image
+                    // binding.image.setImageURI(uri)
+                    bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                 }
             }
         }
-
-    private fun saveImageInternalStorage(bitmaps: Bitmap) {
-        val path = Environment.getExternalStorageDirectory()
-        val out: OutputStream
-        val file = File(path.absolutePath + "/Pictures/", "img.png")
-        try {
-            out = FileOutputStream(file)
-            bitmaps.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        //binding.image.setImageBitmap(bitmaps)
-    }
 
 }

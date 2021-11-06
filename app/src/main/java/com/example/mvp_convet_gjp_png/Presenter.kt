@@ -1,10 +1,19 @@
 package com.example.mvp_convet_gjp_png
 
+import android.net.Uri
+import moxy.MvpPresenter
 
-class Presenter(var view: ViewSSS) {
 
-    private val model = Model()
+class Presenter() : MvpPresenter<ViewSSS>() {
 
-    fun btn_click() = model.saveImageInternalStorage(view.getBitmao())
 
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        viewState.init()
+    }
+
+    fun originalImage(imgUri: Uri){
+        viewState.showOriginImage(imgUri)
+    }
 }

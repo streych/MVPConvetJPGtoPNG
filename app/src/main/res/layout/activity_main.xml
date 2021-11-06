@@ -14,18 +14,11 @@
         android:text="@string/convert"
         android:textSize="@dimen/text_bConvert" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/CCCC"
-        android:text="Convert"
-        android:textSize="32sp"
-        />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:src="@drawable/ic_launcher_background"
         android:layout_gravity="center"/>
 

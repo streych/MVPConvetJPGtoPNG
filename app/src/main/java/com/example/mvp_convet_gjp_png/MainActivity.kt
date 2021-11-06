@@ -1,68 +1,58 @@
 package com.example.mvp_convet_gjp_png
 
+import android.R
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.example.mvp_convet_gjp_png.databinding.ActivityMainBinding
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 
 
-class MainActivity() : AppCompatActivity(), ViewSSS {
+class MainActivity() : MvpAppCompatActivity(), ViewSSS {
 
     private lateinit var binding: ActivityMainBinding
-    private val presenter = Presenter(this)
+    private var imageUri: Uri? = null
+    private val presenter: Presenter by moxyPresenter {
+        Presenter(
+
+        )
+    }
 
     @SuppressLint("WrongThread")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val listener = View.OnClickListener {
-            presenter.btn_click()
-            openInternalStorage()
-        }
-        binding.ConvertJPGToPNG.setOnClickListener(listener)
+
     }
 
-    //BitmapFactory.decodeResource(resources, R.drawable.image_name)
-    // заменить на bitmap из resultLauncher( )
-    override fun getBitmao(): Bitmap = BitmapFactory.decodeResource(resources, R.drawable.image_name)
 
-    private fun openInternalStorage() {
-        val photoPickerIntent =
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        photoPickerIntent.type = "image/*"
-        photoPickerIntent.action = Intent.ACTION_GET_CONTENT
-        resultLauncher.launch(photoPickerIntent)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, imageReturnedIntent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent)
+        if (resultCode == Activity.RESULT_OK && requestCode == 1000) {
+            imageUri = imageReturnedIntent?.data
+            imageUri?.let { presenter.originalImage(it) }
+
+        }
     }
 
-    private var resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val data: Intent? = result.data
-            val resultCode: Int = result.resultCode
-            lateinit var uri: Uri
-            lateinit var bitmap: Bitmap
-            if (resultCode == RESULT_OK) {
-                if (data?.clipData != null) {
-                    val mClipData = data.clipData
-                    for (i in 0 until mClipData!!.itemCount) {
-                        val item = mClipData.getItemAt(i)
-                        uri = item.uri
-                        bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
-                    }
-
-                } else if (data?.data != null) {
-                    uri = data.data!!
-                    // binding.image.setImageURI(uri)
-                    bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
-                }
-            }
+    override fun init() {
+        binding.ConvertJPGToPNG.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/jpg"
+            startActivityForResult(intent, 1000)
         }
+    }
+
+    override fun showOriginImage(uri: Uri) {
+        binding.image.setImageURI(uri)
+    }
+
+
 
 }

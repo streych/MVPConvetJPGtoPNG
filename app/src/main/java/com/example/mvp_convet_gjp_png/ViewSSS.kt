@@ -1,7 +1,12 @@
 package com.example.mvp_convet_gjp_png
 
-import android.graphics.Bitmap
+import android.net.Uri
+import moxy.MvpView
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
-interface ViewSSS {
-    fun getBitmao() : Bitmap
+@StateStrategyType(AddToEndSingleStrategy::class)
+interface ViewSSS : MvpView {
+    fun init()
+    fun showOriginImage(uri: Uri)
 }

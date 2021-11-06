@@ -1,12 +1,11 @@
 package com.example.mvp_convet_gjp_png
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Environment
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
+import java.io.*
 
 class Model {
 
@@ -25,5 +24,7 @@ class Model {
         }
 
     }
+
+
 
 }

@@ -1,28 +1,39 @@
 package com.example.mvp_convet_gjp_png
 
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Environment
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.*
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.core.net.toUri
+import io.reactivex.rxjava3.core.Single
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.util.concurrent.TimeUnit
 
-class Model {
+class Model(private val currentContext: Context) {
 
-    fun saveImageInternalStorage(bitmaps: Bitmap) {
+    fun saveImageInternalStorage(uri: Uri?): Single<Uri> {
+        uri?.let {
 
-        val path = Environment.getExternalStorageDirectory()
-        val file = File(path.absolutePath + "/Pictures/", "img.png")
-        Observable.just(file).subscribeOn(Schedulers.newThread()).subscribe {
-            val out: OutputStream
-            try {
-                out = FileOutputStream(file)
-                bitmaps.compress(Bitmap.CompressFormat.PNG, 90, out)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            val tempConvertedFile = File.createTempFile("tmpConvert", ".png")
+            val fos = FileOutputStream(tempConvertedFile)
+            val bos = BufferedOutputStream(fos)
+            val mim = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(currentContext.contentResolver, it)
+                )
+            } else {
+                MediaStore.Images.Media.getBitmap(currentContext.contentResolver, it)
             }
+            mim.compress(Bitmap.CompressFormat.PNG, 100, bos)
+            bos.close()
+            fos.close()
+            return Single.just(tempConvertedFile.toUri()).delay(3L, TimeUnit.SECONDS)
         }
-
+        return Single.error(Throwable())
     }
 
 
